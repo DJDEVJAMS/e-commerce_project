@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try{
   // find one category by its `id` value
-  const catData =  await Category.findOne(req.params.id, {include: [{ model: Product}]});
+  const catData =  await Category.findByPk(req.params.id, {include: [{ model: Product}]});
   // be sure to include its associated Products
  
   if (!catData) { res.status(404).json({ message: "Catagory doest't exist"}); 

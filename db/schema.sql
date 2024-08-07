@@ -4,7 +4,7 @@ DROP DATABASE IF EXISTS ecommerce_db;
 -- CREATE DATABASE
 CREATE DATABASE ecommerce_db;
 
-\c ecomerce_db;
+\c ecommerce_db;
 
 -- -- Missing DATA TYPES needs revisit --
 -- CREATE TABLE category (
