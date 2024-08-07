@@ -3,86 +3,76 @@ const { Tag, Product, ProductTag } = require('../../models');
 
 // The `/api/tags` endpoint
 
+// Get all tags
 router.get('/', async (req, res) => {
-  // find all tags
-
-  // be sure to include its associated Product data  --> Update Block
   try {
-    const tagData = await Tag.findAll({ include: [{ model: Product }],
-  });
-    if (!tagData) {
-      res.status(404).json({ message: 'No Tags with this id!' });
-      return;
-    }
+    // Find all tags and include associated Product data
+    const tagData = await Tag.findAll({ include: [{ model: Product }] });
     res.status(200).json(tagData);
   } catch (err) {
-    res.status(500).json({ message: 'Internal server error!' });
+    // Handle errors and send a 500 status
+    res.status(500).json({ message: 'Internal server error!', error: err });
   }
 });
 
-router.get('/tags/:id', (req, res) => {
-  // find a single tag by its `id`
-  // be sure to include its associated Product data --> UPdate Block
+// Get one tag by id
+router.get('/:id', async (req, res) => {
   try {
-    const tagData = Tag.findByPk(req.params.id);
-    if (!tagData) {
-      res.status(404).json({ message: 'No Tags with this id!' });
-      return;
-    }
-    res.status(200).json(tagData);
+    // Find a single tag by its primary key and include associated Product data
+    const tagData = await Tag.findByPk(req.params.id, {
+      include: [{ model: Product }],
+    });
+    // Send 200 status with tag data if found, otherwise send 404 status
+    tagData
+      ? res.status(200).json(tagData)
+      : res.status(404).json({ message: 'Tag not found' });
   } catch (err) {
-    res.status(500).json({ message: 'Internal server error!' });
+    // Handle errors and send a 500 status
+    res.status(500).json({ message: 'Internal server error!', error: err });
   }
 });
 
+// Create new tag
 router.post('/', async (req, res) => {
-  // create a new tag
   try {
+    // Create a new tag with the data provided in the request body
     const tagData = await Tag.create(req.body);
-    if (!tagData) {
-      res.status(404).json({ message: 'No Tags with this id!' });
-      return;
-    }
     res.status(200).json(tagData);
   } catch (err) {
-    res.status(500).json({ message: 'Internal server error!' });
+    // Handle errors and send a 500 status
+    res.status(500).json({ message: 'Internal server error!', error: err });
   }
 });
 
-
-router.put('/:id', (req, res) => {
-  // update a tag's name by its `id` value
+// Update tag
+router.put('/:id', async (req, res) => {
   try {
-    const tagData = Tag.update(req.body, {
-      where: {
-        id: req.params.id,
-      },
+    // Update a tag's name by its `id` value
+    const [updated] = await Tag.update(req.body, {
+      where: { id: req.params.id },
     });
-    if (!tagData[0]) {
-      res.status(404).json({ message: 'No Tags with this id!' });
-      return;
-    }
-    res.status(200).json(tagData);
+    // If no rows were updated, send a 404 status
+    updated
+      ? res.status(200).json({ message: 'Tag updated successfully' })
+      : res.status(404).json({ message: 'Tag not found' });
   } catch (err) {
-    res.status(500).json({ message: 'Internal server error!' });
+    // Handle errors and send a 500 status
+    res.status(500).json({ message: 'Internal server error!', error: err });
   }
 });
 
+// Delete one tag by id
 router.delete('/:id', async (req, res) => {
-  // delete on tag by its `id` value ->> Needs updating
   try {
-    const tagData = await Tag.destroy({
-      where: {
-        id: req.params.id,
-      },
-    });
-    if (!tagData) {
-      res.status(404).json({ message: 'No Tags with this id!' });
-      return;
-    }
-    res.status(200).json(tagData);
+    // Delete the tag with the matching ID
+    const deleted = await Tag.destroy({ where: { id: req.params.id } });
+    // If the tag is not found, send a 404 status, otherwise send 200 status
+    deleted
+      ? res.status(200).json({ message: 'Tag deleted successfully' })
+      : res.status(404).json({ message: 'Tag not found' });
   } catch (err) {
-    res.status(500).json({ message: 'Internal server error!' });
+    // Handle errors and send a 500 status
+    res.status(500).json({ message: 'Internal server error!', error: err });
   }
 });
 

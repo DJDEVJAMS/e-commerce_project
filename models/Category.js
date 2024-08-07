@@ -8,11 +8,14 @@ class Category extends Model {}
 Category.init(
 
 {
-  product_id: {
+  id: {
     type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
     references: {
       model: "product",
-      key: "id"
+      key: "id"   
+      
     }
   },
   category_name: {
